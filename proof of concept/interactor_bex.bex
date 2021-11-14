@@ -1,0 +1,91 @@
+	data 50,50,100,100,1
+	
+	' INTERACTOR DEMO SYSTEM
+	
+  ' INVISIBLE COLLISION RECTANGLE LOADED FROM MEMORY (DATA STATEMENT). DESIGNED FOR background object collision detection (floors, walls, doors)
+  
+  ' PLATFORM: SECOND BASIC/BASIEGAXORZ on Sega Mega Drive
+  
+	' PROOF OF CONCEPT
+	
+	' NOVEMBER 13, 2021
+	
+	' CODE LISCENCED CC BY 3.0 US
+	
+	' WRITTEN BY K. JASEY
+ dim interactor(5) as integer
+ 
+ for i = 0 to 4
+ 	read g
+ 	interactor(i) = g
+ next i
+ 
+ s = addsprite(2,2)
+ sx = 30 
+ sy = 30
+ propsprite s,1,1
+ 
+ do
+ 	movesprite s, 128+sx,128+sy
+ 	
+ 	if joypad().0 then
+ 	if rectOverlap(sx,sy-2,sx+16,sy+16-2,interactor(0),interactor(1),interactor(2),interactor(3)) = 0 then
+ 			sy = sy - 2
+ 		end if
+ 	end if
+
+ 	if joypad().1 then
+ 	
+ 		if rectOverlap(sx,sy+2,sx+16,sy+16+2,interactor(0),interactor(1),interactor(2),interactor(3)) = 0 then
+ 			sy = sy + 2
+ 		end if
+ 	end if
+ 	
+ 	if joypad().2 then
+ 	
+ 		if rectOverlap(sx-2,sy,sx+16-2,sy+16,interactor(0),interactor(1),interactor(2),interactor(3)) = 0 then
+ 			sx = sx - 2
+ 		end if
+ 		
+ 	end if
+
+ 	if joypad().3 then
+ 		
+ 		if rectOverlap(sx+2,sy,sx+16+2,sy+16,interactor(0),interactor(1),interactor(2),interactor(3)) = 0 then
+ 			sx = sx + 2
+ 		end if
+ 		
+ 		
+ 	end if
+ 	
+ 	locate 1,1
+ 	print sx, sy, sx+16, sy+16
+ 	sleep 1
+ loop
+ 
+declare function rectOverlap(l1x as integer,l1y as integer, r1x as integer,r1y as integer, l2x as integer,l2y as integer, r2x as integer, r2y as integer) as integer
+ 	
+ 	if l1x >= l2x AND l1x <= r2x AND l1y >= l2y AND l1y <= r2y then
+      return 1
+    end if
+    
+    if l1x >= l2x AND l1x <= r2x AND r1y >= l2y AND r1y <= r2y then
+      return 1
+    end if
+    '// bottmo left corner in other l1.x, r1.y
+    
+    if r1x >= l2x AND r1x <= r2x AND r1y >= l2y AND r1y <= r2y then
+      return 1
+     end if
+    '}// bottom right corner in other
+    
+    if r1x >= l2x AND r1x <= r2x AND l1y >= l2y AND l1y <= r2y then
+      return 1
+     end if
+    '}// top right corner in other r1.x, l1.y
+    
+    
+    if l1x>l2x AND r1x<r2x AND l1y<l2y AND r1y> r2y then return 1
+    
+    return 0
+end function
