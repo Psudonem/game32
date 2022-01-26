@@ -1,0 +1,118 @@
+Here is the design as it stands so far. It is designed to be implamented in C or Java. 
+
+
+What is an actor?
+	An actor is the basic class for all active sprites on screen. 
+	each actor represents a sprite, and contanis information for operation in the 2 space
+What is an interactor?
+	An interactor is a non-visible counterpart to an object
+  
+
+
+
+
+Actor Class
+
++-------+
+| Actor |
++-------+---------+ actor.h
+| + int x         |
+| + int y         |
+| + int w         |
+| + int h         |
+| + int scale_x   |
+| + int scale_w   |
+| + boolean flip  | default sprite faces right, if set, make face left.	
+| + int hspeed    |
+| + int vspeed    |
+| + int max_hspeed|
+| + int max_vspeed|
+| + int gravity   |
+| + int hfric     |
+| + int vfric     |
+| + int id        | // optional
+| + int type      |
+| + int state     | // -1 disabled
+| + int hp        |
+| + int max_frame       |
+| + int cur_frame       |
+| + int sprite_id       |// depricated, use specific sprite graphics array
+| + int[5] sprite_graphics | // integer array that contains links to all sprite graphics.
+| + int host_interactor | // the host interactor for the object (if it's a mob or something)
++-----------------+ // if in functional language, just access the object from the map and take in the 
+					// ID as a perameter
+| + void init(x,y,sprite_id,w,h,type, state)  | actor.c
+| + void applyGravity()                       |
+| + void stopHspeed()                         |
+| + void stopVspeed()                         |
+| + void draw()							      |
+| + bool isDead()                             |
+| + void disableHost()                        | // disable the host interactor
++---------------------------------------------+
+
++------------+
+| Interactor |
++------------+-----------+
+| + int x                |
+| + int y                |
+| + int w                |
+| + int h                |
+| + int state            | // the state of the interactor, -1 disabled
+| + int type             | // what kind of interactor is it
+| + int spawn_actor_type   | // what type of actor to spawn, if it is a spawner
+| + int timer            | // for countdowns
+| + int link_2_actor
++------------------------+-----------------------------+
+| + void init(x,y,w,h,type,state,spawnActorType,timer) |
+| + void spawn()                                       | // spawns actor type
+| + void disable()                                     | //set state to -1
+
+
+
+Map Class
++-----+
+| map |
++-----+---------------------+
+| + bin? map_data[]         |    // the map information
+| + w_tile                  |
+| + h_tile                  |
+| + int map_data_len        |    // size of map information
+| + bin? interactor_data[]  |    // information about the instances to spawn on the map 
+|                           |    // every 8 bytes basically follows the interactor init command: 
+|                           |    // x,y,w,h,type,state,spawnActorType,timer
+|            |
+| + int camstart_x          |
+| + int camstart_y          |
++---------------------------+
+
+Game Class
+
++------+
+| Game |
++------+----------------+
+| + Actor actors(200)   |
+| + curActor            |
+| + Map maps(10)        |
+| + int curMap
+| + int camera_x
+| + int camera_y
+| + Interactor interactors[100]| // array that holds all interactors. Loaded from maps[curmap].interactor_data
+| + int max_interactor
+| + int cur_interactor
++-------------------------------+
+| + boolean collideActor2Actor(a1,a2)     | // retturn collisoin between actors. The status is 
+| + boolean collideActor2Interactor(a,i)  | // return collision between actor and interactor
+| + void clearInteractors() | // clear all interactor
+| + void clearActors()      | // clear all actors
+| + void loadInteractors()  | // load interactors onto active table
+							| // Inreractor filetype spec (each line represents a byte:
+                            / // 	- type of interactor
+                            | // 	- state of interactor
+                            | //	- x location
+                            | //	- y location
+                            | //	- width
+                            | //	- height
+                            | //	- spawntype
+                            | // 	- timer
+                            | // 	- link_2_actor (-1)
+| + int distanceActor2Interactor | // return distance between actor and interactor 
